@@ -1,4 +1,4 @@
-package point
+package inject
 
 type Scope interface {
 	AsSingleton()

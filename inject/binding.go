@@ -1,4 +1,4 @@
-package point
+package inject
 
 type BindingType int
 

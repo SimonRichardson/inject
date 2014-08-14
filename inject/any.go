@@ -1,3 +1,3 @@
-package point
+package inject
 
 type Any interface{}
