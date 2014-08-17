@@ -32,7 +32,7 @@ func NewWorld() *World {
 	}
 }
 
-func (c World) Create() *World {
+func (c World) Create() inject.Any {
 	return NewWorld()
 }
 
@@ -42,9 +42,11 @@ func (c World) String() string {
 
 func main() {
 	hello := inject.Add(NewHello())
-	world := hello.GetInstance(NewWorld())
+	world := hello.GetInstance(World{})
+
 	res := world.Map(func(x inject.Any) inject.Any {
 		return x.(*World).String()
 	})
+
 	fmt.Println(res)
 }
