@@ -6,6 +6,10 @@ import (
 	"github.com/SimonRichardson/inject/inject"
 )
 
+type String struct{}
+
+type Character struct{}
+
 type Hello struct {
 	*inject.Module
 }
@@ -13,7 +17,7 @@ type Hello struct {
 func NewHello() *Hello {
 	return &Hello{
 		inject.NewModule(func(m inject.IModule) {
-			m.Bind("string").ToInstance("Hello")
+			m.Bind(String{}).ToInstance("Hello")
 		}),
 	}
 }
@@ -24,7 +28,7 @@ type World struct {
 
 func NewWorld() *World {
 	return &World{
-		message: inject.As("string").GetOrElse("Bad").(string),
+		message: inject.As(String{}).GetOrElse("Bad").(string),
 	}
 }
 
