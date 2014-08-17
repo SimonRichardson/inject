@@ -5,7 +5,7 @@ type Option interface {
 	Chain(func(Any) Option) Option
 	Map(func(Any) Any) Option
 	Fold(func(Any) Option, func() Option) Option
-	GetOrElse(Any) Any
+	GetOrElse(func() Any) Any
 	Bool() bool
 }
 
@@ -37,7 +37,7 @@ func (x Some) Fold(f func(v Any) Option, g func() Option) Option {
 	return f(x.x)
 }
 
-func (x Some) GetOrElse(v Any) Any {
+func (x Some) GetOrElse(v func() Any) Any {
 	return x.x
 }
 
@@ -67,8 +67,8 @@ func (x None) Fold(f func(v Any) Option, g func() Option) Option {
 	return g()
 }
 
-func (x None) GetOrElse(v Any) Any {
-	return v
+func (x None) GetOrElse(v func() Any) Any {
+	return v()
 }
 
 func (x None) Bool() bool {

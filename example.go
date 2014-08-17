@@ -28,7 +28,7 @@ type World struct {
 
 func NewWorld() *World {
 	return &World{
-		message: inject.As(String{}).GetOrElse("Bad").(string),
+		message: inject.As(String{}).GetOrElse(inject.Constant("Bad")).(string),
 	}
 }
 
