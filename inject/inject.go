@@ -1,9 +1,12 @@
 package inject
 
+import "fmt"
+
 func As(t Any) Option {
+	fmt.Println(">>>", CurrentScope())
 	return CurrentScope().Fold(
 		func(x Any) Option {
-			instance := x.(Binding).GetInstance()
+			instance := x.(IModule).GetInstance(t)
 			return instance.Fold(
 				func(x Any) Option {
 					return instance

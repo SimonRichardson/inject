@@ -1,23 +1,34 @@
 package inject
 
+type IModule interface {
+	Initialise()
+	GetInstance(Any) Option
+	Binds(Any) bool
+	Bind(Any) *Binding
+	BindWith(Any, []Any) *Binding
+	Unbind(Any)
+	Find(Any) Option
+	Dispose()
+}
+
 type Module struct {
 	bindings    map[Any]*Binding
 	initialised bool
+	configure   func(IModule)
 }
 
-func NewModule() *Module {
+func NewModule(configure func(IModule)) *Module {
 	return &Module{
 		bindings:    make(map[Any]*Binding),
 		initialised: false,
+		configure:   configure,
 	}
 }
 
 func (m Module) Initialise() {
-	m.Configure()
+	m.configure(m)
 	m.initialised = true
 }
-
-func (m Module) Configure() {}
 
 func (m Module) GetInstance(t Any) Option {
 	if !m.initialised {
@@ -29,11 +40,11 @@ func (m Module) GetInstance(t Any) Option {
 		PopScope()
 	}()
 
-	return find(t).Fold(
+	return m.Find(t).Fold(
 		func(x Any) Option {
-			return NewSome(x.GetInstance())
+			return NewSome(x.(*Binding).GetInstance())
 		},
-		func() {
+		func() Option {
 			return NewNone()
 		},
 	)
@@ -52,13 +63,13 @@ func (m Module) BindWith(t Any, a []Any) *Binding {
 	binding := NewBinding(m)
 	binding.To(t)
 
-	bindings[t] = binding
+	m.bindings[t] = binding
 
 	return binding
 }
 
 func (m Module) Unbind(t Any) {
-	delete(m, t)
+	delete(m.bindings, t)
 }
 
 func (m Module) Find(t Any) Option {
@@ -69,5 +80,5 @@ func (m Module) Find(t Any) Option {
 }
 
 func (m Module) Dispose() {
-	bindings = make(map[Any]*Binding)
+	m.bindings = make(map[Any]*Binding)
 }

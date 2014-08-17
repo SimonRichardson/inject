@@ -1,11 +1,17 @@
 package inject
 
+import "fmt"
+
 type BindingType int
 
 const (
 	bindingTypeTo       BindingType = 1
 	bindingTypeInstance BindingType = 2
 	bindingTypeProvider BindingType = 3
+)
+
+var (
+	ErrInvalidBindingType error = fmt.Errorf("Invalid Binding Type.")
 )
 
 type Provider interface {
@@ -41,15 +47,15 @@ func (b provider) Get() Any {
 }
 
 type Binding struct {
-	module         *Module
+	module         IModule
 	bindingType    BindingType
-	binding        *Binder
+	binding        Binder
 	singletonScope bool
 	evaluated      bool
 	value          Any
 }
 
-func NewBinding(module *Module) *Binding {
+func NewBinding(module IModule) *Binding {
 	return &Binding{
 		module:         module,
 		evaluated:      false,
@@ -84,12 +90,12 @@ func (b *Binding) ToProvider(p Provider) Scope {
 func (b *Binding) GetInstance() Any {
 	if b.singletonScope {
 		if b.evaluated {
-			b.value = solve()
+			b.value = b.solve()
 			b.evaluated = true
 		}
 		return b.value
 	}
-	return solve()
+	return b.solve()
 }
 
 func (b *Binding) AsSingleton() {
@@ -105,4 +111,5 @@ func (b *Binding) solve() Any {
 	case bindingTypeProvider:
 		return b.binding.Get()
 	}
+	panic(ErrInvalidBindingType)
 }

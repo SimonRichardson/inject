@@ -2,34 +2,34 @@ package inject
 
 var (
 	currentScope Option          = NewNone()
-	modules      []*Module       = new([]*Module, 0, 0)
-	scopes       []*Module       = new([]*Module, 0, 0)
-	bindings     map[Any]*Module = make(map[Any]*Module)
+	modules      []IModule       = make([]IModule, 0, 0)
+	scopes       []IModule       = make([]IModule, 0, 0)
+	bindings     map[Any]IModule = make(map[Any]IModule)
 )
 
-func Add(module Module) Module {
+func Add(module IModule) IModule {
 	modules = append(modules, module)
 	module.Initialise()
 	return module
 }
 
-func Remove(module Module) Module {
+func Remove(module IModule) IModule {
 	module.Dispose()
 
 	modules = remove(modules, module)
 	scopes = remove(scopes, module)
 
-	currentScope = currentScope.Map(func(x Any) Option {
-		if x.(Module) == module {
+	currentScope = currentScope.Chain(func(x Any) Option {
+		if instanceEquals(x, module) {
 			return NewNone()
 		}
-		return x
+		return NewSome(x)
 	})
 
 	return module
 }
 
-func PushScope(module Module) {
+func PushScope(module IModule) {
 	currentScope = NewSome(module)
 	scopes = append(scopes, module)
 }
@@ -61,7 +61,7 @@ func ScopeOf(t Any) Option {
 }
 
 func ModuleOf(t Any) Option {
-	binding = bindings[t]
+	binding := bindings[t]
 	if binding != nil {
 		return NewSome(binding)
 	}
@@ -76,10 +76,10 @@ func ModuleOf(t Any) Option {
 	return NewNone()
 }
 
-func remove(x []*Module, mod Module) []*Module {
+func remove(x []IModule, mod IModule) []IModule {
 	index := -1
 	for k, v := range x {
-		if v == mod {
+		if instanceEquals(v, mod) {
 			index = k
 			break
 		}
@@ -89,13 +89,13 @@ func remove(x []*Module, mod Module) []*Module {
 		return x
 	}
 
-	return append(x[:index], s[index+1:]...)
+	return append(x[:index], x[index+1:]...)
 }
 
-func removeLast(x []*Module) []*Module {
+func removeLast(x []IModule) []IModule {
 	index := len(x)
 	if index < 1 {
 		return x
 	}
-	return append(x[:index], s[index+1:]...)
+	return append(x[:index], x[index+1:]...)
 }
