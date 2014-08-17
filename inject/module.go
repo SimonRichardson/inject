@@ -25,12 +25,12 @@ func NewModule(configure func(IModule)) *Module {
 	}
 }
 
-func (m Module) Initialise() {
+func (m *Module) Initialise() {
 	m.configure(m)
 	m.initialised = true
 }
 
-func (m Module) GetInstance(t Any) Option {
+func (m *Module) GetInstance(t Any) Option {
 	if !m.initialised {
 		return NewNone()
 	}
@@ -45,21 +45,20 @@ func (m Module) GetInstance(t Any) Option {
 			return NewSome(x.(*Binding).GetInstance())
 		},
 		func() Option {
-			return NewNone()
+			return NewSome(instanceOf(t))
 		},
 	)
 }
 
-func (m Module) Binds(t Any) bool {
+func (m *Module) Binds(t Any) bool {
 	return m.Find(t).Bool()
 }
 
-func (m Module) Bind(t Any) *Binding {
+func (m *Module) Bind(t Any) *Binding {
 	return m.BindWith(t, make([]Any, 0, 0))
 }
 
-func (m Module) BindWith(t Any, a []Any) *Binding {
-
+func (m *Module) BindWith(t Any, a []Any) *Binding {
 	binding := NewBinding(m)
 	binding.To(t)
 
@@ -68,17 +67,17 @@ func (m Module) BindWith(t Any, a []Any) *Binding {
 	return binding
 }
 
-func (m Module) Unbind(t Any) {
+func (m *Module) Unbind(t Any) {
 	delete(m.bindings, t)
 }
 
-func (m Module) Find(t Any) Option {
+func (m *Module) Find(t Any) Option {
 	if x, ok := m.bindings[t]; ok {
 		return NewSome(x)
 	}
 	return NewNone()
 }
 
-func (m Module) Dispose() {
+func (m *Module) Dispose() {
 	m.bindings = make(map[Any]*Binding)
 }

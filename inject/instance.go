@@ -1,9 +1,6 @@
 package inject
 
-import (
-	"fmt"
-	"reflect"
-)
+import "reflect"
 
 func instanceOf(t Any) Any {
 	x := reflect.ValueOf(t)
@@ -11,7 +8,6 @@ func instanceOf(t Any) Any {
 }
 
 func isInstanceOf(module IModule, t Any) bool {
-	fmt.Println("A", module, t)
 	if module == nil || t == nil {
 		return module == t
 	}
@@ -24,6 +20,5 @@ func isInstanceOf(module IModule, t Any) bool {
 }
 
 func instanceEquals(x Any, y Any) bool {
-	fmt.Println("> A", x, y)
 	return x == y
 }

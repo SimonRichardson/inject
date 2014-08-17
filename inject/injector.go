@@ -96,6 +96,8 @@ func removeLast(x []IModule) []IModule {
 	index := len(x)
 	if index < 1 {
 		return x
+	} else if index == 1 {
+		return make([]IModule, 0, 0)
 	}
 	return append(x[:index], x[index+1:]...)
 }

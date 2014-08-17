@@ -42,7 +42,7 @@ func (x Some) GetOrElse(v Any) Any {
 }
 
 func (x Some) Bool() bool {
-	return false
+	return true
 }
 
 type None struct{}
