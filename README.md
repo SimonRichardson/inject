@@ -1,9 +1,23 @@
 inject
 ======
 
-Injection Points
+### Injection Points
 
-## Example
+A very simple, but powerful IoC container, where modules declare dependencies 
+for injections with immutable state.
+
+Since Go lacks a good annotation system there is only one way to inject objects
+into a class `inject.As(Struct{})`.
+
+### Future
+
+In the future, it would be better to use the Reader monad to supply the 
+dependencies, rather than a [global mutable state](https://github.com/SimonRichardson/inject/blob/1e0f4bc5a4a2891e77abac3101f2faa4abe28392/inject/injector.go#L3).
+
+### Example
+
+The [example](example.go) is a lot more up to date by it's very nature of being 
+code, but to give you an idea, see the following:
 
 Create the module with the various configuration points.
 
