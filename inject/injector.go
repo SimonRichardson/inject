@@ -40,7 +40,7 @@ func PopScope() {
 	if numOfScopes == 0 {
 		currentScope = NewNone()
 	} else {
-		currentScope = NewSome(scopes[numOfScopes])
+		currentScope = NewSome(scopes[numOfScopes-1])
 	}
 }
 
@@ -93,9 +93,9 @@ func remove(x []IModule, mod IModule) []IModule {
 }
 
 func removeLast(x []IModule) []IModule {
-	index := len(x) - 1
-	if index < 1 {
+	numOf := len(x)
+	if numOf <= 1 {
 		return make([]IModule, 0, 0)
 	}
-	return x[:index-1]
+	return x[:numOf-1]
 }

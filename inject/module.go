@@ -1,9 +1,5 @@
 package inject
 
-type Creatable interface {
-	Create() Any
-}
-
 type IModule interface {
 	Initialise()
 	GetInstance(Any) Option
@@ -49,8 +45,8 @@ func (m *Module) GetInstance(t Any) Option {
 			return NewSome(x.(*Binding).GetInstance())
 		},
 		func() Option {
-			if c, ok := t.(Creatable); ok {
-				return NewSome(c.Create())
+			if c, ok := t.(Binder); ok {
+				return NewSome(c.Get())
 			}
 			return NewNone()
 		},
