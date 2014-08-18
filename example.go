@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -78,15 +80,19 @@ func main() {
 	a := x.GetInstance(Dispatcher{})
 	b := y.GetInstance(Dispatcher{})
 
-	a.Map(func(x inject.Any) inject.Any {
-		fmt.Println(x)
+	res0 := a.Map(func(x inject.Any) inject.Any {
 		return string(x.(*Dispatcher).Load())
 	})
-	b.Map(func(x inject.Any) inject.Any {
-		fmt.Println(x)
+	res1 := b.Map(func(x inject.Any) inject.Any {
 		return string(x.(*Dispatcher).Load())
 	})
 
-	//fmt.Println(res0)
-	//fmt.Println(res1)
+	// These two values should not match!
+	fmt.Println(res0.Map(md5Hash))
+	fmt.Println(res1.Map(md5Hash))
+}
+
+func md5Hash(v inject.Any) inject.Any {
+	hash := md5.Sum([]byte(v.(string)))
+	return hex.EncodeToString(hash[:])
 }
